@@ -1,0 +1,18 @@
+[
+    {
+        "code": "S",
+        "libelle": "Small"
+    },
+    {
+        "code": "M",
+        "libelle": "Medium"
+    },
+    {
+        "code": "L",
+        "libelle": "Large"
+    },
+    {
+        "code": "XL",
+        "libelle": "X-Large"
+    }
+]
