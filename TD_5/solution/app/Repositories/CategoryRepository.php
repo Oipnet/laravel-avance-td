@@ -2,8 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Attributes\Repository;
 use App\Events\ModelCreated;
+use App\Models\Category;
 
+#[Repository(interface: CategoryRepositoryInterface::class, model: Category::class)]
 class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
 {
 

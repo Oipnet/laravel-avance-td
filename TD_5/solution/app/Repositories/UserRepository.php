@@ -2,13 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Events\ModelCreated;
-use App\Models\Product;
+use App\Attributes\Repository;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 
+#[Repository(interface: UserRepositoryInterface::class, model: User::class)]
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     public function create(array $data, array $roles): User

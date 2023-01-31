@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Attributes\Repository;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderState;
@@ -23,7 +24,9 @@ use App\Repositories\SizeRepository;
 use App\Repositories\SizeRepositoryInterface;
 use App\Repositories\UserRepository;
 use App\Repositories\UserRepositoryInterface;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
+use ReflectionClass;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -34,33 +37,20 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(ProductRepositoryInterface::class, fn () => new ProductRepository(
-            new Product()
-        ));
+        $repositoriesClasses = $this->getRepositoriesClasses(app_path('Repositories/*.php'));
 
-        $this->app->singleton(CategoryRepositoryInterface::class, fn () => new CategoryRepository(
-            new Category()
-        ));
+        foreach ($repositoriesClasses as $repositoriesClass) {
+            $reflection = new ReflectionClass($repositoriesClass);
+            foreach ($reflection->getAttributes(Repository::class) as $repositoryAttribute) {
+                /** @var Repository $instance */
+                $instance = $repositoryAttribute->newInstance();
 
-        $this->app->singleton(SizeRepositoryInterface::class, fn () => new SizeRepository(
-            new Size()
-        ));
+                $modelClass = $instance->getModel();
+                $model = new $modelClass();
 
-        $this->app->singleton(RoleRepositoryInterface::class, fn () => new RoleRepository(
-            new Role()
-        ));
-
-        $this->app->singleton(UserRepositoryInterface::class, fn () => new UserRepository(
-            new User()
-        ));
-
-        $this->app->singleton(OrderRepositoryInterface::class, fn () => new OrderRepository(
-            new Order()
-        ));
-
-        $this->app->singleton(OrderStateRepositoryInterface::class, fn () => new OrderStateRepository(
-            new OrderState()
-        ));
+                $this->app->singleton($instance->getInterface(), fn () => $reflection->newInstance($model));
+            }
+        }
     }
 
     /**
@@ -70,5 +60,17 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+    }
+
+    private function getRepositoriesClasses(string $repositoriesPath)
+    {
+        return array_map(function ($repositoriesFiles) {
+            $pathParts = explode(DIRECTORY_SEPARATOR, $repositoriesFiles);
+            $pathParts = array_slice($pathParts, -3);
+            $className = array_pop($pathParts);
+            $className = str_replace('.php', '', $className);
+            $pathParts[0] = ucfirst($pathParts[0]);
+            return implode('\\', $pathParts).'\\'.$className;
+        }, glob($repositoriesPath));
     }
 }

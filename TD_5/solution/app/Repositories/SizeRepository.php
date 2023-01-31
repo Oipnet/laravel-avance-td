@@ -2,9 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Attributes\Repository;
 use App\Events\ModelCreated;
 use App\Events\ModelUpdated;
+use App\Models\Size;
 
+#[Repository(interface: SizeRepositoryInterface::class, model: Size::class)]
 class SizeRepository extends BaseRepository implements SizeRepositoryInterface
 {
 

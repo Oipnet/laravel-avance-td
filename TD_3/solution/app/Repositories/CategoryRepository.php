@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Events\ModelCreated;
 
-class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
+class xCategoryRepository extends BaseRepository implements CategoryRepositoryInterface
 {
 
     public function findbySlug(string $slug)

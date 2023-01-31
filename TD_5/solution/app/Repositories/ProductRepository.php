@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Attributes\Repository;
 use App\Events\ModelCreated;
 use App\Models\Product;
 
+#[Repository(interface: ProductRepositoryInterface::class, model: Product::class)]
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface
 {
 
